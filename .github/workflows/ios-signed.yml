@@ -1,0 +1,46 @@
+name: Build signed iOS IPA
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  signed-ipa:
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate signing secrets
+        env:
+          CERTIFICATE_P12_BASE64: ${{ secrets.IOS_CERTIFICATE_P12_BASE64 }}
+          CERTIFICATE_PASSWORD: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
+          PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+          DEVELOPMENT_TEAM: ${{ secrets.IOS_DEVELOPMENT_TEAM }}
+        run: |
+          set -euo pipefail
+          for name in CERTIFICATE_P12_BASE64 CERTIFICATE_PASSWORD PROVISIONING_PROFILE_BASE64 DEVELOPMENT_TEAM; do
+            test -n "${!name:-}" || { echo "Missing GitHub secret: $name" >&2; exit 1; }
+          done
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Install signing identity and profile
+        env:
+          CERTIFICATE_P12_BASE64: ${{ secrets.IOS_CERTIFICATE_P12_BASE64 }}
+          CERTIFICATE_PASSWORD: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
+          PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+          KEYCHAIN_PASSWORD: ${{ secrets.IOS_KEYCHAIN_PASSWORD }}
+        run: bash scripts/install-signing.sh
+      - name: Generate project and export signed IPA
+        env:
+          DEVELOPMENT_TEAM: ${{ secrets.IOS_DEVELOPMENT_TEAM }}
+          EXPORT_METHOD: ${{ vars.IOS_EXPORT_METHOD }}
+        run: bash scripts/build-signed-ipa.sh
+      - name: Upload signed IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: OPhone-AI-iOS-signed-${{ github.sha }}
+          path: build/export/*.ipa
+          if-no-files-found: error
+          retention-days: 30
