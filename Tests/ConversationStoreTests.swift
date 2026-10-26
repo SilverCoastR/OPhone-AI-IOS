@@ -22,6 +22,7 @@ final class ConversationStoreTests: XCTestCase {
         let first = ChatMessage(role: .user, content: "first"), answer = ChatMessage(role: .assistant, content: "answer"), next = ChatMessage(role: .user, content: "next")
         try await store.append(first, to: conversation.id); try await store.append(answer, to: conversation.id); try await store.append(next, to: conversation.id)
         try await store.deleteMessage(first.id, in: conversation.id)
-        XCTAssertEqual(try await store.active()?.messages.map(\.content), ["next"])
+        let remainingContents = try await store.active()?.messages.map(\.content)
+        XCTAssertEqual(remainingContents, ["next"])
     }
 }
