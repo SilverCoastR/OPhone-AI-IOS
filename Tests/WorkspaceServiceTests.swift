@@ -7,7 +7,8 @@ final class WorkspaceServiceTests: XCTestCase {
         defer { try? FileManager.default.removeItem(at: root) }
         let workspace = WorkspaceService(root: root)
         _ = try await workspace.write(path: "notes/test.txt", text: "hello")
-        XCTAssertEqual(try await workspace.read(path: "notes/test.txt"), "hello")
+        let contents = try await workspace.read(path: "notes/test.txt")
+        XCTAssertEqual(contents, "hello")
         do { _ = try await workspace.read(path: "../outside"); XCTFail("Expected path rejection") }
         catch { XCTAssertTrue(error is WorkspaceService.WorkspaceError) }
     }

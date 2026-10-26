@@ -9,7 +9,8 @@ final class TaskControllerTests: XCTestCase {
         let one = try await controller.begin(conversationID: "c:test", humanKey: "m1", goal: "write a note")
         let two = try await controller.begin(conversationID: "c:test", humanKey: "m1", goal: "write a note")
         XCTAssertEqual(one.id, two.id)
-        XCTAssertEqual((await events.query(taskID: one.id)).filter { $0.type == "task_created" }.count, 1)
+        let taskCreatedCount = (await events.query(taskID: one.id)).filter { $0.type == "task_created" }.count
+        XCTAssertEqual(taskCreatedCount, 1)
     }
 
     func testCompletionRequiresEvidence() async throws {
