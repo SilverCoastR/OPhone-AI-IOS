@@ -1,0 +1,12 @@
+.DS_Store
+.build/
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+OPhoneAI.xcodeproj/
+*.ipa
+*.xcarchive
+Config/Signing.xcconfig
+__pycache__/
+*.py[cod]

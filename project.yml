@@ -1,0 +1,71 @@
+name: OPhoneAI
+options:
+  bundleIdPrefix: ai.ophone
+  deploymentTarget:
+    iOS: "16.0"
+  xcodeVersion: "16.0"
+  generateEmptyDirectories: true
+settings:
+  base:
+    SWIFT_VERSION: "5.10"
+    IPHONEOS_DEPLOYMENT_TARGET: "16.0"
+    CURRENT_PROJECT_VERSION: 1
+    MARKETING_VERSION: 1.0.0
+    CODE_SIGN_STYLE: Automatic
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    SWIFT_STRICT_CONCURRENCY: minimal
+targets:
+  OPhoneAI:
+    type: application
+    platform: iOS
+    sources:
+      - path: OPhoneAI
+        excludes:
+          - Resources
+    resources:
+      - path: OPhoneAI/Resources
+    info:
+      path: Config/Info.plist
+      properties:
+        CFBundleDisplayName: OPhone AI
+        CFBundleName: OPhoneAI
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        UILaunchScreen: {}
+        UIApplicationSupportsIndirectInputEvents: true
+        UIFileSharingEnabled: true
+        LSSupportsOpeningDocumentsInPlace: true
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        NSFaceIDUsageDescription: OPhone AI can use Face ID to protect locally stored API keys when the user enables that option.
+    entitlements:
+      path: Config/OPhoneAI.entitlements
+      properties:
+        com.apple.security.application-groups: []
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: ai.ophone.ios
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        TARGETED_DEVICE_FAMILY: "1,2"
+  OPhoneAITests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: Tests
+    dependencies:
+      - target: OPhoneAI
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: ai.ophone.ios.tests
+schemes:
+  OPhoneAI:
+    build:
+      targets:
+        OPhoneAI: all
+        OPhoneAITests: [test]
+    test:
+      gatherCoverageData: true
+      targets:
+        - OPhoneAITests
