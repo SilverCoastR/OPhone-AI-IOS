@@ -10,6 +10,8 @@ jobs:
   signed-ipa:
     runs-on: macos-15
     timeout-minutes: 30
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.2.app/Contents/Developer
     steps:
       - uses: actions/checkout@v4
       - name: Validate signing secrets
@@ -44,3 +46,4 @@ jobs:
           path: build/export/*.ipa
           if-no-files-found: error
           retention-days: 30
+
