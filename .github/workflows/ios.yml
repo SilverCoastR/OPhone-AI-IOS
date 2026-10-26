@@ -1,0 +1,51 @@
+name: Build iOS IPA
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate Xcode project
+        run: xcodegen generate
+      - name: Select an available simulator
+        id: simulator
+        shell: bash
+        run: |
+          set -euo pipefail
+          DESTINATION=$(python3 scripts/select-simulator.py)
+          echo "destination=$DESTINATION" >> "$GITHUB_OUTPUT"
+          echo "Using $DESTINATION"
+      - name: Run unit tests
+        run: >-
+          xcodebuild -project OPhoneAI.xcodeproj -scheme OPhoneAI
+          -destination '${{ steps.simulator.outputs.destination }}'
+          -resultBundlePath build/TestResults.xcresult test
+      - name: Build unsigned IPA
+        run: bash scripts/build-unsigned-ipa.sh
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: OPhone-AI-iOS-unsigned-${{ github.sha }}
+          path: build/OPhone-AI-iOS-unsigned.ipa
+          if-no-files-found: error
+          retention-days: 30
+      - name: Upload test results on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-test-results-${{ github.sha }}
+          path: build/TestResults.xcresult
+          if-no-files-found: ignore
+          retention-days: 7
