@@ -3,7 +3,7 @@ import Foundation
 
 @MainActor final class AppEnvironment: ObservableObject {
     let settings: AppSettings
-    let browser: BrowserStore
+    var browser: BrowserStore
     let capabilityPolicy: CapabilityPolicy
     let providerSettings: ProviderSettingsStore
     let memory: MemoryStore
