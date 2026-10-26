@@ -22,8 +22,8 @@ targets:
       - path: OPhoneAI
         excludes:
           - Resources
-    resources:
       - path: OPhoneAI/Resources
+        buildPhase: resources
     info:
       path: Config/Info.plist
       properties:

@@ -17,4 +17,5 @@ xcodebuild \
 mkdir -p build/Payload
 cp -R build/OPhoneAI.xcarchive/Products/Applications/OPhoneAI.app build/Payload/
 (cd build && ditto -c -k --sequesterRsrc --keepParent Payload OPhone-AI-iOS-unsigned.ipa)
+python3 scripts/validate-ipa.py "$ROOT/build/OPhone-AI-iOS-unsigned.ipa"
 echo "Created $ROOT/build/OPhone-AI-iOS-unsigned.ipa"
